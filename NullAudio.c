@@ -6,7 +6,7 @@ A minimal user-space driver.
 */
 
 /*==================================================================================================
-	NullAudio.c
+	BlackHole.c
 ==================================================================================================*/
 
 //==================================================================================================
@@ -72,10 +72,10 @@ A minimal user-space driver.
 
 //==================================================================================================
 #pragma mark -
-#pragma mark NullAudio State
+#pragma mark BlackHole State
 //==================================================================================================
 
-//	The purpose of the NullAudio sample is to provide a bare bones implementations to
+//	The purpose of the BlackHole sample is to provide a bare bones implementations to
 //	illustrate the minimal set of things a driver has to do. The sample driver has the following
 //	qualities:
 //	- a plug-in
@@ -128,18 +128,18 @@ enum
 //	multiple devices were supported, this state would need to be encapsulated in one or more structs
 //	so that each object's state can be tracked individually.
 //	Note also that we share a single mutex across all objects to be thread safe for the same reason.
-#define										kPlugIn_BundleID				"com.apple.audio.NullAudio"
+#define										kPlugIn_BundleID				"com.apple.audio.BlackHole"
 static pthread_mutex_t						gPlugIn_StateMutex				= PTHREAD_MUTEX_INITIALIZER;
 static UInt32								gPlugIn_RefCount				= 0;
 static AudioServerPlugInHostRef				gPlugIn_Host					= NULL;
 static const AudioObjectPropertySelector	kPlugIn_CustomPropertyID		= 'PCst';
 
-#define										kBox_UID						"NullAudioBox_UID"
+#define										kBox_UID						"BlackHoleBox_UID"
 static CFStringRef							gBox_Name						= NULL;
 static Boolean								gBox_Acquired					= true;
 
-#define										kDevice_UID						"NullAudioDevice_UID"
-#define										kDevice_ModelUID				"NullAudioDevice_ModelUID"
+#define										kDevice_UID						"BlackHoleDevice_UID"
+#define										kDevice_ModelUID				"BlackHoleDevice_ModelUID"
 static pthread_mutex_t						gDevice_IOMutex					= PTHREAD_MUTEX_INITIALIZER;
 static Float64								gDevice_SampleRate				= 44100.0;
 static UInt64								gDevice_IOIsRunning				= 0;
@@ -1228,7 +1228,7 @@ static OSStatus	BlackHole_GetPlugInPropertyData(AudioServerPlugInDriverRef inDri
 			FailWithAction(inQualifierData == NULL, theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: no qualifier for kPlugIn_CustomPropertyID");
 			DebugMsg("BlackHole_GetPlugInPropertyData: the qualifier passed to us was:");
 			CFShow(*((CFPropertyListRef*)inQualifierData));
-			*((CFStringRef*)outData) = CFSTR("NullAudio PlugIn Custom Property");
+			*((CFStringRef*)outData) = CFSTR("BlackHole PlugIn Custom Property");
 			*outDataSize = sizeof(CFStringRef);
 			break;
 			
@@ -1726,7 +1726,7 @@ static OSStatus	BlackHole_SetBoxPropertyData(AudioServerPlugInDriverRef inDriver
 			//	of this property should only send the notificaiton if the hardware wants the app to
 			//	flash it's UI for the device.
 			{
-				syslog(LOG_NOTICE, "The identify property has been set on the Box implemented by the NullAudio driver.");
+				syslog(LOG_NOTICE, "The identify property has been set on the Box implemented by the BlackHole driver.");
 				FailWithAction(inDataSize != sizeof(UInt32), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_SetBoxPropertyData: wrong size for the data for kAudioObjectPropertyIdentify");
 				dispatch_after(dispatch_time(0, 2ULL * 1000ULL * 1000ULL * 1000ULL), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),	^()
 																																		{
